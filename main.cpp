@@ -1,15 +1,13 @@
 #include <stdio.h>
 #include <iostream>
-//#include <stdlib.h>
-//#define _USE_MATH_DEFINES
 #include <math.h>
 
 
 float gamm = 1.4;       // Gas constant
-double Me = 3;          //Exit Mach number
+double Me = 2;          //Exit Mach number
 
 double ThroatRad = 1;
-int nChar = 200;          //Number of characteristic curves
+int nChar = 2;          //Number of characteristic curves
 
 
 // Prandlt meyer function
@@ -65,7 +63,7 @@ class OriChar{
         double theta;
         double nu = theta;
         double M;
-        double mu = asin(1.0/M);
+        double mu;
         double k_minus = 2.0*theta;
         double k_plus = 0;
 
@@ -78,7 +76,7 @@ class CplusPoint{
             double theta;
             double nu;
             double M;
-            double mu = asin(1.0/M);
+            double mu;
             double k_minus;
             double k_plus;
 
@@ -112,9 +110,9 @@ int main(){
         orichar[i].M = inverse_pm(orichar[i].nu);
         orichar[i].k_minus = 2*orichar[i].theta;
         orichar[i].k_plus = 0;
+        orichar[i].mu = MachAngle(orichar[i].M);
 
-
-        std::cout << "orichar: " << orichar[i].k_minus*180*(1/3.14) << std::endl;
+        //std::cout << "orichar: " << orichar[i].k_minus*180*(1/3.14) << std::endl;
     }
 
     int cp[nChar];      //Array to store indices of Centrepoints
@@ -158,13 +156,25 @@ int main(){
             //std::cout << "CPlusChar: " << cplusPoint[i].nu << std::endl;
 
             //Calculate x coordinate
+            double t1 = (0.5)*(cplusPoint[i].theta + orichar[i].theta);
+            double m1 = (0.5)*(cplusPoint[i].mu + orichar[i].mu);
+
+            cplusPoint[i].coord.x = -(ThroatRad)/tan(t1-m1);
+            //std::cout << "X: " << cplusPoint[i].coord.x << std::endl;
 
         }
 
         else if(cplusPoint[i].isWallpoint){
 
             cplusPoint[i].theta = cplusPoint[i-1].theta;
-            //std::cout << "CPlusCharWall: " << cplusPoint[i].theta*180/3.14 << std::endl;
+
+            double A = (cplusPoint[i-1].theta + cplusPoint[i-1].mu);
+            double B = (0.5)*(thetaMax + cplusPoint[i].theta);
+
+            cplusPoint[i].coord.x = (ThroatRad + (cplusPoint[i-1].coord.x*tan(A)) - cplusPoint[i-1].coord.y)/(tan(A) - tan(B));
+            cplusPoint[i].coord.y = ThroatRad + (cplusPoint[i].coord.x*tan(B));
+
+            //std::cout << "WallX: " << cplusPoint[i].coord.y << std::endl;
 
         }
 
@@ -178,7 +188,13 @@ int main(){
             cplusPoint[i].M = inverse_pm(cplusPoint[i].nu);
             cplusPoint[i].mu = MachAngle(cplusPoint[i].M);
 
-            //std::cout << "theta: " << cplusPoint[i].M << std::endl;
+            double A = (0.5)*(cplusPoint[i].theta + cplusPoint[i-1].theta + cplusPoint[i].mu + cplusPoint[i-1].mu);
+            double B = (0.5)*(cplusPoint[i].theta + cplusPoint[i-1].theta - cplusPoint[i].mu - cplusPoint[i-1].mu);
+
+            cplusPoint[i].coord.x = (ThroatRad + (cplusPoint[i-1].coord.x*tan(A)) - cplusPoint[i-1].coord.y)/(tan(A) - tan(B));
+            cplusPoint[i].coord.y = ThroatRad + (cplusPoint[i].coord.x*tan(B));
+
+            //std::cout << "x: " << cplusPoint[i].coord.y << std::endl;
 
         }
 
@@ -208,6 +224,10 @@ int main(){
             cplusPoint[i].coord.y = 0;
 
             //Calculate x coordinate
+            double t1 = (0.5)*(cplusPoint[i].theta + cplusPoint[i - nChar + (rr-1)].theta);
+            double m1 = (0.5)*(cplusPoint[i].mu + cplusPoint[i - nChar + (rr-1)].mu);
+
+            cplusPoint[i].coord.x = -(ThroatRad)/tan(t1-m1);
 
             //update rr_next
             rr_next++;
