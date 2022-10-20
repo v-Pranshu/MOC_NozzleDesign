@@ -4,10 +4,10 @@
 
 
 float gamm = 1.4;       // Gas constant
-double Me = 2;          //Exit Mach number
+double Me = 8;          //Exit Mach number
 
 double ThroatRad = 1;
-int nChar = 2;          //Number of characteristic curves
+int nChar = 70;          //Number of characteristic curves
 
 
 // Prandlt meyer function
@@ -50,6 +50,8 @@ double inverse_pm(double nu){
 double MachAngle(double M){
     return asin(1/M);
 }
+
+void save_coordinates(char filename[128], double coord);
 
 
 double nu_m = prandtl_meyer(Me);
@@ -162,7 +164,7 @@ int main(){
             double m1 = (0.5)*(cplusPoint[i].mu + orichar[i].mu);
 
             cplusPoint[i].coord.x = -(ThroatRad)/tan(t1-m1);
-            std::cout << "tan: " << cplusPoint[i].coord.x << std::endl;
+            //std::cout << "tan: " << cplusPoint[i].coord.x << std::endl;
 
         }
 
@@ -179,7 +181,7 @@ int main(){
             cplusPoint[i].coord.x = Nr/Dr;
             cplusPoint[i].coord.y = ThroatRad + (cplusPoint[i].coord.x*tan(B));
 
-            std::cout << "WallX: " << cplusPoint[i].coord.x << std::endl;
+            //std::cout << "WallX: " << cplusPoint[i].coord.x << std::endl;
 
         }
 
@@ -199,7 +201,7 @@ int main(){
             cplusPoint[i].coord.x = (ThroatRad + (cplusPoint[i-1].coord.x*tan(A)) - cplusPoint[i-1].coord.y)/(tan(A) - tan(B));
             cplusPoint[i].coord.y = ThroatRad + (cplusPoint[i].coord.x*tan(B));
 
-            std::cout << "x: " << cplusPoint[i].coord.x << std::endl;
+            //std::cout << "x: " << cplusPoint[i].coord.x << std::endl;
 
         }
 
@@ -286,18 +288,37 @@ int main(){
 
     }
 
+    //Save Wall Coordinates in a text file to be used for post processing
+
+    // assume reasonably-sized file names
+    char filename_x[128];
+    char filename_y[128];
+    const char *name_x = "x";
+    const char *name_y = "y";
+
+
+    sprintf(filename_x, name_x);
+    sprintf(filename_y, name_y);
+    FILE *output_x = fopen(filename_x, "w");
+    FILE *output_y = fopen(filename_y, "w");
+
+    fprintf(output_x, "%.10f\t", 0);
+    fprintf(output_y, "%.10f\t", ThroatRad);
+
     for(int i = 0; i<totalPts; i++){
 
         if(cplusPoint[i].isWallpoint){
-            std::cout <<"x: " << i << ": "<<cplusPoint[i].coord.y <<std::endl;
+            //std::cout <<"x: " << i << ": "<<cplusPoint[i].coord.x <<std::endl;
+            fprintf(output_x, "%.10f\t", cplusPoint[i].coord.x);
+            fprintf(output_y, "%.10f\t", cplusPoint[i].coord.y);
         }
 
         //std::cout << cplusPoint[i].theta*180/3.14159 <<std::endl;
 
     }
 
-
+    fclose(output_x);
+    fclose(output_y);
 
 }
-
 
