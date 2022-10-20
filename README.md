@@ -5,3 +5,11 @@ The code utilizes method of characterisitics to solve the velocity potential equ
 ![Screenshot (633)](https://user-images.githubusercontent.com/79853965/196799527-56a7bbcd-17cc-4a6f-8753-aff9ee38e386.png)
 
 Figure: PDE modelling the flow (J.D Anderson, Fundamentals of Aerodynamics)
+
+
+
+![Screenshot (634)](https://user-images.githubusercontent.com/79853965/196974763-f34f1098-00dc-4337-a6fd-ec84255a3885.png)
+
+Figure: Code's generated nozzle contour for exit mach number of 8 (gamma = 1.4)
+
+## Still need to verify code's excessive long nozzle length (coordinates of last wall point)
