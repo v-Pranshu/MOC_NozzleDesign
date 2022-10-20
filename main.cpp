@@ -98,6 +98,8 @@ int main(){
 
     std::cout << " -------- STARTING MOC -------- " << std::endl;
 
+    std::cout << "Theta Wall Max:  " << thetaMax*180/3.14<< std::endl;
+
     OriChar orichar[nChar];
 
     int totalPts = (nChar + 3)*(nChar)/2;
@@ -160,7 +162,7 @@ int main(){
             double m1 = (0.5)*(cplusPoint[i].mu + orichar[i].mu);
 
             cplusPoint[i].coord.x = -(ThroatRad)/tan(t1-m1);
-            //std::cout << "X: " << cplusPoint[i].coord.x << std::endl;
+            std::cout << "tan: " << cplusPoint[i].coord.x << std::endl;
 
         }
 
@@ -169,12 +171,15 @@ int main(){
             cplusPoint[i].theta = cplusPoint[i-1].theta;
 
             double A = (cplusPoint[i-1].theta + cplusPoint[i-1].mu);
-            double B = (0.5)*(thetaMax + cplusPoint[i].theta);
+            double B = (0.5)*(thetaMax + cplusPoint[i-1].theta);
 
-            cplusPoint[i].coord.x = (ThroatRad + (cplusPoint[i-1].coord.x*tan(A)) - cplusPoint[i-1].coord.y)/(tan(A) - tan(B));
+            double Nr = cplusPoint[i-1].coord.y - ThroatRad - (cplusPoint[i-1].coord.x*tan(A));
+            double Dr = tan(B) - tan(A);
+
+            cplusPoint[i].coord.x = Nr/Dr;
             cplusPoint[i].coord.y = ThroatRad + (cplusPoint[i].coord.x*tan(B));
 
-            //std::cout << "WallX: " << cplusPoint[i].coord.y << std::endl;
+            std::cout << "WallX: " << cplusPoint[i].coord.x << std::endl;
 
         }
 
@@ -189,12 +194,12 @@ int main(){
             cplusPoint[i].mu = MachAngle(cplusPoint[i].M);
 
             double A = (0.5)*(cplusPoint[i].theta + cplusPoint[i-1].theta + cplusPoint[i].mu + cplusPoint[i-1].mu);
-            double B = (0.5)*(cplusPoint[i].theta + cplusPoint[i-1].theta - cplusPoint[i].mu - cplusPoint[i-1].mu);
+            double B = (0.5)*(cplusPoint[i].theta + orichar[i].theta - cplusPoint[i].mu - orichar[i].mu);
 
             cplusPoint[i].coord.x = (ThroatRad + (cplusPoint[i-1].coord.x*tan(A)) - cplusPoint[i-1].coord.y)/(tan(A) - tan(B));
             cplusPoint[i].coord.y = ThroatRad + (cplusPoint[i].coord.x*tan(B));
 
-            //std::cout << "x: " << cplusPoint[i].coord.y << std::endl;
+            std::cout << "x: " << cplusPoint[i].coord.x << std::endl;
 
         }
 
@@ -227,7 +232,7 @@ int main(){
             double t1 = (0.5)*(cplusPoint[i].theta + cplusPoint[i - nChar + (rr-1)].theta);
             double m1 = (0.5)*(cplusPoint[i].mu + cplusPoint[i - nChar + (rr-1)].mu);
 
-            cplusPoint[i].coord.x = -(ThroatRad)/tan(t1-m1);
+            cplusPoint[i].coord.x = cplusPoint[i- nChar + (rr-1)].coord.x - ((cplusPoint[i - nChar + (rr-1)].coord.y)/tan(t1-m1));
 
             //update rr_next
             rr_next++;
@@ -238,7 +243,19 @@ int main(){
 
             cplusPoint[i].theta = cplusPoint[i-1].theta;
 
+            double A = (cplusPoint[i-1].theta + cplusPoint[i-1].mu);
+            double B = (0.5)*(cplusPoint[i - nChar + (rr-1)].theta + cplusPoint[i].theta);
+
             //Calculate coordinates
+
+            double y_ = cplusPoint[i - nChar + (rr-1)].coord.y;
+            double x_ = cplusPoint[i - nChar + (rr-1)].coord.x;
+
+            cplusPoint[i].coord.x = ((y_ - cplusPoint[i-1].coord.y) + (cplusPoint[i-1].coord.x*tan(A)) - (x_*tan(B)))/(tan(A) - tan(B));
+            cplusPoint[i].coord.y = y_ + ((cplusPoint[i].coord.x - x_)*tan(B));
+
+            //std::cout << "y.... : " << tan(B)<< std::endl;
+
 
         }
 
@@ -253,6 +270,15 @@ int main(){
             cplusPoint[i].mu = MachAngle(cplusPoint[i].M);
 
             //Calculate coordinates
+            double A = (0.5)*(cplusPoint[i].theta + cplusPoint[i-1].theta + cplusPoint[i].mu + cplusPoint[i-1].mu);
+            double B = (0.5)*(cplusPoint[i].theta + cplusPoint[i-nChar+(rr-1)].theta - cplusPoint[i].mu - cplusPoint[i-nChar+(rr-1)].mu);
+
+            double yo = cplusPoint[i-nChar+(rr-1)].coord.y;
+            double xo = cplusPoint[i-nChar+(rr-1)].coord.x;
+
+            cplusPoint[i].coord.x = ((yo - cplusPoint[i-1].coord.y) + (cplusPoint[i-1].coord.x*tan(A)) - (xo*tan(B)))/(tan(A) - tan(B));
+            cplusPoint[i].coord.y = yo + (cplusPoint[i].coord.x - xo)*tan(A);
+
 
         }
 
@@ -263,8 +289,7 @@ int main(){
     for(int i = 0; i<totalPts; i++){
 
         if(cplusPoint[i].isWallpoint){
-            std::cout << cplusPoint[i].theta*180/3.14159 <<std::endl;
-
+            std::cout <<"x: " << i << ": "<<cplusPoint[i].coord.y <<std::endl;
         }
 
         //std::cout << cplusPoint[i].theta*180/3.14159 <<std::endl;
