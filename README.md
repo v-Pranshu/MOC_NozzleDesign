@@ -20,6 +20,7 @@ Figure: Contour for considering 2 characteristic curves
 
 Figure: Contour for considering 5 characteristic curves
 
-![Screenshot (638)](https://user-images.githubusercontent.com/79853965/197177139-3411f2a6-bb68-420f-ba9a-4722e58ef5b9.png)
+
+![Screenshot (637)](https://user-images.githubusercontent.com/79853965/197177242-c5859119-6376-4963-b153-8c41607f8fe9.png)
 
 Figure: Contour for considering 50 characteristic curves
