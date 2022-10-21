@@ -5,8 +5,9 @@ load y
 
 axis equal
 
+nChar = length(x) - 1;
 plot(x , y);
-title('Number of Characteristics: 5');
+title('Number of Characteristics: ', nChar);
 xlabel('X/Throat');
 ylabel('Y/Throat');
 xlim([0 5]);
