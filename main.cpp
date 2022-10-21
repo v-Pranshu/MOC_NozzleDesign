@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <iostream>
 #include <math.h>
+#include <cmath>
 
 
 float gamm = 1.4;       // Gas constant
-double Me = 8;          //Exit Mach number
+double Me = 3;          //Exit Mach number
 
 double ThroatRad = 1;
-int nChar = 70;          //Number of characteristic curves
+int nChar = 5;          //Number of characteristic curves
 
 
 // Prandlt meyer function
@@ -58,6 +59,8 @@ double nu_m = prandtl_meyer(Me);
 double thetaMax = nu_m*0.5;
 
 
+
+
 //Class for A1, A2, A3 ..... 
 class OriChar{
 
@@ -98,9 +101,12 @@ class CplusPoint{
 
 int main(){
 
-    std::cout << " -------- STARTING MOC -------- " << std::endl;
+    std::cout << " ############ STARTING NOZZLE DESIGN ########### " << std::endl;
 
-    std::cout << "Theta Wall Max:  " << thetaMax*180/3.14<< std::endl;
+    std::cout << "MAXIMUM WALL ANGLE:  " << thetaMax*180/3.14<< std::endl;
+    std::cout << "EXIT MACH NUMBER: " << Me <<std::endl;
+    std::cout << "NUMBER OF CHARACTERISTIC CURVES: " << nChar << std::endl;
+
 
     OriChar orichar[nChar];
 
@@ -108,15 +114,14 @@ int main(){
     CplusPoint cplusPoint[totalPts];
 
     for(int i = 0; i<nChar; i++){
-
-        orichar[i].theta = (i+1)*(thetaMax/nChar);
+    
+        orichar[i].theta = (i+1)*(thetaMax)/(nChar);
         orichar[i].nu = orichar[i].theta;
         orichar[i].M = inverse_pm(orichar[i].nu);
         orichar[i].k_minus = 2*orichar[i].theta;
         orichar[i].k_plus = 0;
         orichar[i].mu = MachAngle(orichar[i].M);
 
-        //std::cout << "orichar: " << orichar[i].k_minus*180*(1/3.14) << std::endl;
     }
 
     int cp[nChar];      //Array to store indices of Centrepoints
@@ -145,7 +150,7 @@ int main(){
 
     for(int i = 0; i<nChar+1; i++){
 
-        if(cplusPoint[i].isCentrepoint){
+        if(i==0){
 
             cplusPoint[i].theta = 0;
             cplusPoint[i].k_minus = orichar[i].k_minus;
@@ -157,14 +162,11 @@ int main(){
 
             cplusPoint[i].coord.y = 0;
 
-            //std::cout << "CPlusChar: " << cplusPoint[i].nu << std::endl;
-
             //Calculate x coordinate
             double t1 = (0.5)*(cplusPoint[i].theta + orichar[i].theta);
             double m1 = (0.5)*(cplusPoint[i].mu + orichar[i].mu);
 
             cplusPoint[i].coord.x = -(ThroatRad)/tan(t1-m1);
-            //std::cout << "tan: " << cplusPoint[i].coord.x << std::endl;
 
         }
 
@@ -181,8 +183,6 @@ int main(){
             cplusPoint[i].coord.x = Nr/Dr;
             cplusPoint[i].coord.y = ThroatRad + (cplusPoint[i].coord.x*tan(B));
 
-            //std::cout << "WallX: " << cplusPoint[i].coord.x << std::endl;
-
         }
 
         else{
@@ -198,10 +198,8 @@ int main(){
             double A = (0.5)*(cplusPoint[i].theta + cplusPoint[i-1].theta + cplusPoint[i].mu + cplusPoint[i-1].mu);
             double B = (0.5)*(cplusPoint[i].theta + orichar[i].theta - cplusPoint[i].mu - orichar[i].mu);
 
-            cplusPoint[i].coord.x = (ThroatRad + (cplusPoint[i-1].coord.x*tan(A)) - cplusPoint[i-1].coord.y)/(tan(A) - tan(B));
+            cplusPoint[i].coord.x = ((ThroatRad - cplusPoint[i-1].coord.y)+ (cplusPoint[i-1].coord.x*tan(A)))/(tan(A) - tan(B));
             cplusPoint[i].coord.y = ThroatRad + (cplusPoint[i].coord.x*tan(B));
-
-            //std::cout << "x: " << cplusPoint[i].coord.x << std::endl;
 
         }
 
@@ -220,13 +218,29 @@ int main(){
 
             rr+=1;
 
-            cplusPoint[i].theta = 0;
-            cplusPoint[i].k_minus = cplusPoint[i - nChar + (rr-1)].k_minus;
-            cplusPoint[i].nu = cplusPoint[i].k_minus;
-            cplusPoint[i].k_plus = -cplusPoint[i].nu;
+            /*if(i == totalPts-2){
+                //Incase of last centre point
+                cplusPoint[i].M = Me;
+                cplusPoint[i].nu  = prandtl_meyer(Me);
+                cplusPoint[i].theta = 0;
+                cplusPoint[i].k_minus = cplusPoint[i].nu;
+                cplusPoint[i].k_plus = -cplusPoint[i].nu;
+                cplusPoint[i].mu = MachAngle(cplusPoint[i].M);
 
-            cplusPoint[i].M = inverse_pm(cplusPoint[i].nu);
-            cplusPoint[i].mu = MachAngle(cplusPoint[i].M);
+            }
+            */
+
+            //else{
+
+                cplusPoint[i].theta = 0;
+                cplusPoint[i].k_minus = cplusPoint[i - nChar + (rr-1)].k_minus;
+                cplusPoint[i].nu = cplusPoint[i].k_minus;
+                cplusPoint[i].k_plus = -cplusPoint[i].nu;
+
+                cplusPoint[i].M = inverse_pm(cplusPoint[i].nu);
+                cplusPoint[i].mu = MachAngle(cplusPoint[i].M);
+
+            //}
 
             cplusPoint[i].coord.y = 0;
 
@@ -256,9 +270,6 @@ int main(){
             cplusPoint[i].coord.x = ((y_ - cplusPoint[i-1].coord.y) + (cplusPoint[i-1].coord.x*tan(A)) - (x_*tan(B)))/(tan(A) - tan(B));
             cplusPoint[i].coord.y = y_ + ((cplusPoint[i].coord.x - x_)*tan(B));
 
-            //std::cout << "y.... : " << tan(B)<< std::endl;
-
-
         }
 
         else{
@@ -277,14 +288,14 @@ int main(){
 
             double yo = cplusPoint[i-nChar+(rr-1)].coord.y;
             double xo = cplusPoint[i-nChar+(rr-1)].coord.x;
+            double yprev = cplusPoint[i-1].coord.y;
+            double xprev = cplusPoint[i-1].coord.x;
 
-            cplusPoint[i].coord.x = ((yo - cplusPoint[i-1].coord.y) + (cplusPoint[i-1].coord.x*tan(A)) - (xo*tan(B)))/(tan(A) - tan(B));
-            cplusPoint[i].coord.y = yo + (cplusPoint[i].coord.x - xo)*tan(A);
+            cplusPoint[i].coord.x = (yo-yprev-(xo*tan(B)) + (xprev*tan(A)))/(tan(A) - tan(B));
+            cplusPoint[i].coord.y = yprev + (cplusPoint[i].coord.x - xprev)*tan(A);
 
 
         }
-
-        //Condition to update rr
 
     }
 
@@ -308,17 +319,19 @@ int main(){
     for(int i = 0; i<totalPts; i++){
 
         if(cplusPoint[i].isWallpoint){
-            //std::cout <<"x: " << i << ": "<<cplusPoint[i].coord.x <<std::endl;
             fprintf(output_x, "%.10f\t", cplusPoint[i].coord.x);
             fprintf(output_y, "%.10f\t", cplusPoint[i].coord.y);
         }
-
-        //std::cout << cplusPoint[i].theta*180/3.14159 <<std::endl;
 
     }
 
     fclose(output_x);
     fclose(output_y);
+
+    std::cout << "NUMBER OF GRID POINTS COMPUTED: " << totalPts << std::endl;
+    std::cout << "NOZZLE LENGTH: " << cplusPoint[totalPts-1].coord.x << " (times the throat radius)" << std::endl;
+    std::cout << "Please run 'Nozzle_Contour.m' to visualize the nozzle's contour" << std::endl;;
+    std::cout << "--------------------------------------------------------------" <<std::endl;
 
 }
 
