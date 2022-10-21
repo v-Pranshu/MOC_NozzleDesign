@@ -5,7 +5,7 @@
 
 
 float gamm = 1.4;       // Gas constant
-double Me = 3;          //Exit Mach number
+double Me = 2;          //Exit Mach number
 
 double ThroatRad = 1;
 int nChar = 5;          //Number of characteristic curves
