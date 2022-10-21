@@ -13,14 +13,18 @@ Figures attached below demonstrate the progression of the nozzle contour for req
 
 ![Screenshot (635)](https://user-images.githubusercontent.com/79853965/197176948-d78caabb-73c5-43f4-bced-2ff72816a289.png)
 
-Figure: Contour for considering 2 characteristic curves
+Figure 1: Contour for considering 2 characteristic curves
 
 
 ![Screenshot (638)](https://user-images.githubusercontent.com/79853965/197177067-85cf6a9e-18c4-4815-91df-7b1a0d85cd15.png)
 
-Figure: Contour for considering 5 characteristic curves
+Figure 2: Contour for considering 5 characteristic curves
 
 
 ![Screenshot (637)](https://user-images.githubusercontent.com/79853965/197177242-c5859119-6376-4963-b153-8c41607f8fe9.png)
 
-Figure: Contour for considering 50 characteristic curves
+Figure 3: Contour for considering 50 characteristic curves
+
+![Screenshot (639)](https://user-images.githubusercontent.com/79853965/197218118-79e2d9b3-8078-4632-9115-c4c881a09b0a.png)
+
+Figure 4: Contour for considering 90 characteristic curves
