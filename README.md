@@ -28,3 +28,5 @@ Figure 3: Contour for considering 50 characteristic curves
 ![Screenshot (639)](https://user-images.githubusercontent.com/79853965/197218118-79e2d9b3-8078-4632-9115-c4c881a09b0a.png)
 
 Figure 4: Contour for considering 90 characteristic curves
+
+## Note: Contours shown above only represent the nozzle boundary above the centre line, as due to symmetry, a similar profile will be obtained below the centreline as well.
