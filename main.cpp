@@ -8,7 +8,7 @@ float gamm = 1.4;       // Gas constant
 double Me = 2;          //Exit Mach number
 
 double ThroatRad = 1;
-int nChar = 40;          //Number of characteristic curves
+int nChar = 4;          //Number of characteristic curves
 
 
 // Prandlt meyer function
