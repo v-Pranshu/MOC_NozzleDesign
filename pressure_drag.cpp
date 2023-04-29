@@ -8,7 +8,7 @@ const int num_points = 80;  //Put even number
 double A_throat = 1.0;
 double gamma = 1.41;
 double Mach_a = 0.4;
-double pa = 100;    // in kPa
+double pa = 1;    // in kPa
 
 class Control{
     public:
@@ -95,7 +95,7 @@ int main(){
 
         for (int i = 0; i < num_points; i++)
         {            
-            if(i < num_points){
+            if(i < num_points/2){
                 point[i].A = point[i].y + A_throat;
                 point[i].ratio = point[i].A / A_throat;
             }
@@ -114,13 +114,10 @@ int main(){
         //Compute Drag by summing pressure*Dy
         double drag = 0.0;
 
-        for(int i = 0; i<(num_points/2); i++){
-
+        for(int i = 0; i<(num_points); i++){
             drag += (point[i].pressure) * (point[i].y - point[i - 1].y);
         }
 
-        drag = 2*drag;
-
         std::cout << "DRAG FORCE TOTAL : "<< drag << "kN"<<std::endl;
-
+        
 }

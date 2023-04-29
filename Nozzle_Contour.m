@@ -5,7 +5,7 @@ load y
 
 
 nChar = length(x) - 1;
-
+axis equal
 plot(x , y);
 axis equal
 

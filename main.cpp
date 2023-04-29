@@ -4,11 +4,11 @@
 #include <cmath>
 
 
-float gamm = 1.4;       // Gas constant
+float gamm = 1.414;       // Gas constant
 double Me = 2;          //Exit Mach number
 
 double ThroatRad = 1;
-int nChar = 4;          //Number of characteristic curves
+int nChar = 150;          //Number of characteristic curves
 
 
 // Prandlt meyer function
